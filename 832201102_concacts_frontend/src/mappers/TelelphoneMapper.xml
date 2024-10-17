@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hqyj.mapper.TelephoneMapper">
+
+
+    <!--查询所有电话簿-->
+    <select id="findAllTelephone" resultType="Telephone">
+        SELECT id,name,gender,address,number FROM telephone
+    </select>
+
+    <!--添加电话簿-->
+    <insert id="addTelephone" parameterType="Telephone">
+        INSERT INTO telephone(name,gender,address,number)VALUES(#{name},#{gender},#{address},#{number})
+    </insert>
+
+    <!--修改电话簿-->
+    <update id="updateTelephone" parameterType="Telephone">
+        UPDATE telephone
+        <set>
+            <if test="name!=null">name=#{name},</if>
+            <if test="gender!=null">gender=#{gender},</if>
+            <if test="address!=null">address=#{address},</if>
+            <if test="number!=null">number=#{number}</if>
+        </set>
+        WHERE id=#{id}
+    </update>
+
+    <!--根据电话簿编号获取电话簿-->
+    <select id="findTelephoneById" resultType="Telephone">
+        SELECT * FROM telephone WHERE id=#{id}
+    </select>
+
+    <!--根据电话簿编号删除电话簿-->
+    <delete id="deleteTelephoneById">
+        DELETE FROM telephone WHERE id=#{id}
+    </delete>
+</mapper>

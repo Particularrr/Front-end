@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="renderer" content="webkit">
+  <title></title>
+  <link rel="stylesheet" href="css/pintuer.css">
+  <link rel="stylesheet" href="css/admin.css">
+  <script src="js/jquery.js"></script>
+  <script src="js/pintuer.js"></script>
+</head>
+<body>
+<form method="post" action="" id="listform">
+  <div class="panel admin-panel">
+    <div class="padding border-bottom">
+      <ul class="search" style="padding-left:10px;">
+        <li><a class="button border-main icon-plus-square-o" id="add_button" href="sys_telephone_add.html">新增</a></li>
+        <li><a class="button border-main icon-red icon-trash-o" id="delete_button" href="#">删除</a></li>
+        <li><a class="button border-main icon-edit" id="edit_button" href="#">修改</a></li>
+      </ul>
+    </div>
+    <table class="table table-hover text-center" id="telephone_data">
+      <tr>
+        <th width="100" style="text-align:left; padding-left:20px;">选择</th>
+        <th width="100">排序</th>
+        <th>姓名</th>
+        <th>性别</th>
+        <th>地址</th>
+        <th>号码</th>
+      </tr>
+    </table>
+  </div>
+</form>
+<script type="text/javascript">
+  //页面加载执行的操作
+  $(function(){
+    //加载用户列表数据
+    loadTelephone();
+    deleteTelephoneById();
+    editTelephoneById();
+  });
+  function editTelephoneById(){
+    //给编辑按钮添加事件监听
+    $('#edit_button').on('click', function(event){
+      //取消事件默认行为
+      event.preventDefault();
+      // 获取选中的复选框的ID
+      const selectedIds = $('.telephone-checkbox:checked').map(function() {
+        return $(this).val();
+      }).get();
+
+      if (selectedIds.length === 0) {
+        alert("请至少选择一个对象进行修改！");
+        return;
+      }
+      //将用户编号保存在本地会话存储中
+      sessionStorage.setItem("telephoneId",selectedIds.join(","));
+      //实现页面跳转
+      location.href = "sys_telephone_edit.html";
+    });
+  }
+  function loadTelephone(){
+    //移除表格除表头之外的其它行
+    $("#telephone_data tr:gt(0)").remove();
+    //使用ajax
+    $.ajax({
+      url:"../telephones/findAllTelephone/",
+      type:"GET",
+      dataType:"JSON",
+      success:function (result){
+        console.log(result);
+        //处理服务器响应的数据
+        if (result.code == 200) {
+          //遍历响应结果中的数据
+          $.each(result.data, function (index, item) {
+            //使用模板字符串
+            let row_data = `
+              <tr>
+                <td style="text-align:left; padding-left:20px;">
+                  <input type="checkbox" name="select" class="telephone-checkbox" value="${item.id}">
+                </td>
+                <td>${item.id}</td>
+                <td>${item.name}</td>
+                <td>${item.gender}</td>
+                <td>${item.address}</td>
+                <td>${item.number}</td>
+              </tr>
+            `;
+
+            //将数据行添加到表格中
+            $("#telephone_data").append(row_data);
+          });
+        }
+      }
+    });
+  }
+  function deleteTelephoneById(){
+    $('#delete_button').on('click', function(event){
+      event.preventDefault();
+      // 获取选中的复选框的ID
+      const selectedIds = $('.telephone-checkbox:checked').map(function() {
+        return $(this).val();
+      }).get();
+
+      if (selectedIds.length === 0) {
+        alert("请至少选择一个对象进行删除！");
+        return;
+      }
+
+      if (confirm("是否要删除选中的对象？")) {
+        // 确定删除，执行删除操作
+        $.ajax({
+          url: "../telephones/deleteTelephoneById/" + selectedIds.join(","), // 连接 ID
+          type: "GET",
+          dataType: "JSON",
+          success: function (result) {
+            console.log(result);
+            if (result.data === true) {
+              // 重新加载页面
+              location.reload();
+            } else {
+              alert("删除失败，请稍后重试。");
+            }
+          },
+          error: function () {
+            alert("删除请求出错，请稍后重试。");
+          }
+        });
+      }
+    });
+  }
+</script>
+</body>
+</html>

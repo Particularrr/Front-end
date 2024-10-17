@@ -1,0 +1,22 @@
+server:
+  port: 8088 #页面窗口号
+  servlet:
+    context-path: /telephone
+
+#???????
+spring:
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+    druid:
+      url: jdbc:mysql://localhost:3306/hr
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      username: root #Mysql账户名
+      password: Zcl100624 #Mysql密码
+
+#mybatis\u76F8\u5173\u914D\u7F6E
+mybatis:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  type-aliases-package: com.hqyj.model
+  mapper-locations: classpath:/mappers/*.xml
+

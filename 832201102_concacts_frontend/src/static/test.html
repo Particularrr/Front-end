@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>jQuery实现数据交互</title>
+</head>
+<body>
+  <h1>jQuery实现数据交互</h1>
+  <input type="button" value="获取数据" id="btn1">
+  <ul id="ul_data">
+    <!--<li>数据</li>-->
+  </ul>
+  <hr>
+  <input type="text" id="name" name="name">
+  <input type="button" value="提交数据" id="btn2">
+  <h3 id="h3_data"></h3>
+  <!--1.引用jquery库-->
+  <script src="admin/js/jquery.js"></script>
+  <!--2.使用jquery-->
+  <script>
+    //页面加载执行的操作
+    $(function(){
+      //alert("jQuery的基本使用");
+      //给按钮添加事件
+      $("#btn1").on("click",function(){
+        //alert("你点击了获取数据的按钮。。。");
+          $("#ul_data").empty(); //清空元素中的内容
+          $.ajax({
+              url:"test/list",      //请求的路径
+              type:"GET",           //请求的方式：GET/POST
+              dataType:"JSON",      //服务器响应的数据类型
+              success:function (result){
+                  console.log(result);  //打印服务器响应的内容
+                  //遍历集合中的数据
+                  $.each(result,function(index,item){
+                      //定义模板字符串
+                      let li_data = `<li>${item}</li>`;
+                      //将数据追加到ul元素中
+                      $("#ul_data").append(li_data);
+                  })
+              }
+          });
+      });
+      //给提交数据按钮添加事件
+      $("#btn2").on("click",function (){
+        $.ajax({
+          //url:"test/testParam1?name=" + $("#name").val(),
+          url:"test/testParam1",
+          type:"GET",
+          data:{"name":$("#name").val()},  //传递的数据
+          dataType: "text",
+          success:function (result){
+            console.log(result);
+            $("#h3_data").html(result);
+          }
+        });
+      });
+    });
+  </script>
+</body>
+</html>
